@@ -1,0 +1,16 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql" // Sesuaikan dengan database yang Anda gunakan, misalnya 'mysql' atau 'postgresql'
+  url      = env("DATABASE_URL") // Menggunakan DATABASE_URL dari file .env
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+}

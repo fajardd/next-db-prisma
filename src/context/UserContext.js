@@ -33,10 +33,20 @@ export const UserProvider = ({ children }) => {
       setName("");
       setEmail("");
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("Email sudah digunakan, silahkan gunakan email lain");
+      console.error("Failed to add user", error);
+      if (error.response) {
+        const { status, data } = error.response;
+        if (status === 400) {
+          alert(
+            data.error || "Email sudah digunakan, silahkan gunakan email lain"
+          );
+        } else if (status === 500) {
+          alert(data.error || "Internal server error, gagal menambahkan user");
+        } else {
+          alert("Terjadi kesalahan, silahkan coba lagi");
+        }
       } else {
-        console.error("Failed to add user", error);
+        alert("Failed to connect the server, please try again later");
       }
     }
   };

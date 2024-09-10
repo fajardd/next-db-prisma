@@ -31,6 +31,19 @@ export async function POST(request) {
       );
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (existingUser) {
+      return new Response(JSON.stringify({ error: "Email already existing" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const newUser = await prisma.user.create({
       data: {
         name,
@@ -44,6 +57,17 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error("Error creating user:", error);
+
+    if (error.code === "P2002") {
+      return new Response(
+        JSON.stringify({ error: "A user with this email already exist" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     return new Response(JSON.stringify({ error: "Failed to create user" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
